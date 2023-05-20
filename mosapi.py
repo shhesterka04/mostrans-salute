@@ -1,4 +1,5 @@
 import requests
+
 api_key = '9cd207eb7d3a29cabb8960d43100ccdc'
 # 60664/rows - Маршруты  - код маршрута, номер и название - ОК
 # 60665 - Рейсы маршрутов - код перечня дат, рейса и маршрута - 237 634 240000
@@ -8,11 +9,10 @@ api_key = '9cd207eb7d3a29cabb8960d43100ccdc'
 # 60662 - Остановки - код остановки и название 12440
 
 
-
 ans = {
-    "route_short_name": "", 
+    "route_short_name": "",
     "route_long_name": "",
-    "route_type": -1, 
+    "route_type": -1,
     "route_id": -1,
     "trips": {
     },
@@ -29,23 +29,21 @@ ans = {
     "end_date": "",
 }
 
-
 url = 'https://apidata.mos.ru/v1/datasets/60664/rows'
 params = {
     "api_key": api_key,
     "$filter": "Cells/route_short_name eq 'М16'",
 }
 response = requests.get(url=url, params=params)
-if response.status_code == 200: 
+if response.status_code == 200:
     data = response.json()
     for row in data:
-            ans["route_short_name"] = row["Cells"]["route_short_name"]
-            ans["route_long_name"] = row["Cells"]["route_long_name"]
-            ans["route_type"] = row["Cells"]["route_type"]
-            ans["route_id"] = row["Cells"]["route_id"]
+        ans["route_short_name"] = row["Cells"]["route_short_name"]
+        ans["route_long_name"] = row["Cells"]["route_long_name"]
+        ans["route_type"] = row["Cells"]["route_type"]
+        ans["route_id"] = row["Cells"]["route_id"]
 else:
     print('Failed to retrieve data from API')
-
 
 url = "https://apidata.mos.ru/v1/datasets/60665/rows/"
 params = {
@@ -59,7 +57,9 @@ if response.status_code == 200:
     data = response.json()
     for row in data:
         key = row["Cells"]["trip_id"]
-        ans["trips"][key] = {row["Cells"]["trip_id"]: {"service_id": row["Cells"]["service_id"], "direction_id": row["Cells"]["direction_id"], "stops": {}, "workdays": {}, start_date}}
+        ans["trips"][key] = {row["Cells"]["trip_id"]: {"service_id": row["Cells"]["service_id"],
+                                                       "direction_id": row["Cells"]["direction_id"], "stops": {},
+                                                       "workdays": {}}}
 else:
     print('Failed to retrieve data from API')
 
@@ -113,7 +113,7 @@ else:
 # print(ans)
 
 
-#---------------------
+# ---------------------
 
 # url = f'https://apidata.mos.ru/v1/datasets/60661/rows?$top=30&$orderby="stop_sequence desc"&api_key={api_key}'
 # params = {
