@@ -1,41 +1,48 @@
 import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
 import timeit
-import asyncio
-from pyppeteer import launch
+import time
 import json
 
 
-async def parse_schedule():
+def parse_schedule():
     url = 'https://transport.mos.ru/transport/schedule'
 
-    # Запуск браузера
-    browser = await launch()
-    # Открытие новой вкладки
-    page = await browser.newPage()
-    # Переход на страницу
-    await page.goto(url)
+    options = webdriver.ChromeOptions()
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('start-maximized')
+    options.add_argument('disable-infobars')
+    options.add_argument('--disable-extensions')
+
+    # you can specify the path to chromedriver directly in webdriver.Chrome() if needed
+    driver = webdriver.Chrome(options=options)
+    driver.get(url)
+
+    # wait for the page to load
+    time.sleep(5)
+
+    # get the page source
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
 
     data = []
-    routes = await page.querySelectorAll('a.ts-row')
+    routes = soup.find_all('a', class_='ts-row')
     for route in routes:
-        short_route_name = await page.evaluate('(element) => element.textContent',
-                                               await route.querySelector('div.ts-number'))
-        long_route_name = await page.evaluate('(element) => element.textContent',
-                                              await route.querySelector('div.ts-title'))
-        link = route.getProperty('href')
-
-        if short_route_name and long_route_name and link:
+        short_route_name_tag = route.find('div', class_='ts-number')
+        long_route_name_tag = route.find('div', class_='ts-title')
+        link = route.get('href')
+        if short_route_name_tag and long_route_name_tag and link:
             data.append({
-                'short_route_name': short_route_name,
-                'long_route_name': long_route_name,
+                'short_route_name': short_route_name_tag.text.strip(),
+                'long_route_name': long_route_name_tag.text.strip(),
                 'link': link,
             })
 
-    await browser.close()
+    # make sure to quit the driver when you're done
+    driver.quit()
+
     return json.dumps(data, ensure_ascii=False, indent=4)
-
-
 
 
 def parse_route(url, direction=0):
@@ -76,6 +83,6 @@ def parse_route(url, direction=0):
 
 
 start = timeit.default_timer()
-print(asyncio.run(parse_schedule()))
+print(parse_schedule())
 # print(parse_route("https://transport.mos.ru/transport/schedule/route/2111"))
 end = timeit.default_timer()

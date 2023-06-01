@@ -7,3 +7,5 @@ bs4~=0.0.1
 beautifulsoup4~=4.12.2
 pyppeteer~=1.0.2
 tqdm~=4.65.0
+
+selenium~=4.9.1
