@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-import timeit
+from selenium.webdriver.chrome.service import Service
 import time
 import json
 
@@ -9,21 +9,18 @@ import json
 def parse_schedule():
     url = 'https://transport.mos.ru/transport/schedule'
 
-    options = webdriver.ChromeOptions()
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('start-maximized')
-    options.add_argument('disable-infobars')
-    options.add_argument('--disable-extensions')
-
-    # you can specify the path to chromedriver directly in webdriver.Chrome() if needed
-    driver = webdriver.Chrome(options=options)
+    service = Service(executable_path="src/mosru_api/chromedriver")
+    driver = webdriver.Firefox(service=service)
     driver.get(url)
 
-    # wait for the page to load
-    time.sleep(5)
-
-    # get the page source
+    last_height = driver.execute_script("return document.body.scrollHeight")
+    while True:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+        time.sleep(2)
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            break
+        last_height = new_height
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
     data = []
@@ -39,7 +36,6 @@ def parse_schedule():
                 'link': link,
             })
 
-    # make sure to quit the driver when you're done
     driver.quit()
 
     return json.dumps(data, ensure_ascii=False, indent=4)
@@ -64,7 +60,7 @@ def parse_route(url, direction=0):
 
         arrive_time = {}
         for hour in hours:
-            hour_str = hour.find('div', class_='dt1').text.strip()[:-1]  # убираем ':' из строки часа
+            hour_str = hour.find('div', class_='dt1').text.strip()[:-1]
 
             if not hour_str:
                 continue
@@ -82,7 +78,3 @@ def parse_route(url, direction=0):
     return json.dumps(data, ensure_ascii=False, indent=4)
 
 
-start = timeit.default_timer()
-print(parse_schedule())
-# print(parse_route("https://transport.mos.ru/transport/schedule/route/2111"))
-end = timeit.default_timer()
