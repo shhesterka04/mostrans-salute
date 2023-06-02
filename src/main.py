@@ -8,3 +8,6 @@ def get_application() -> FastAPI:
 
     application.include_router(schedule_router)
     return application
+
+
+app = get_application()

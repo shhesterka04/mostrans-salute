@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 import time
 import json
 
@@ -9,8 +10,11 @@ import json
 def parse_schedule():
     url = 'https://transport.mos.ru/transport/schedule'
 
+    options = Options()
+    options.add_argument("--headless")
+
     service = Service(executable_path="src/mosru_api/chromedriver")
-    driver = webdriver.Firefox(service=service)
+    driver = webdriver.Chrome(service=service, options=options)
     driver.get(url)
 
     last_height = driver.execute_script("return document.body.scrollHeight")
@@ -32,13 +36,13 @@ def parse_schedule():
         if short_route_name_tag and long_route_name_tag and link:
             data.append({
                 'short_route_name': short_route_name_tag.text.strip(),
-                'long_route_name': long_route_name_tag.text.strip(),
+                'long_route_name': long_route_name_tag.text.strip().replace("\"", ""),
                 'link': link,
             })
 
     driver.quit()
 
-    return json.dumps(data, ensure_ascii=False, indent=4)
+    return data
 
 
 def parse_route(url, direction=0):
@@ -76,5 +80,3 @@ def parse_route(url, direction=0):
         })
 
     return json.dumps(data, ensure_ascii=False, indent=4)
-
-
