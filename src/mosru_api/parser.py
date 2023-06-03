@@ -46,6 +46,7 @@ def parse_schedule():
 
 
 def parse_route(url, direction=0):
+    url = "https://transport.mos.ru/" + url
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
                       'Chrome/39.0.2171.95 Safari/537.36'

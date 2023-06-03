@@ -18,11 +18,12 @@ class Route(Base):
         self.long_route_name = long_route_name
         self.link = link
 
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 engine = create_engine('sqlite:///routes.db')
 Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
-
-

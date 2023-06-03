@@ -1,3 +1,4 @@
+import sqlalchemy
 from fastapi import APIRouter
 from sqlalchemy import exists
 from starlette import status
@@ -7,6 +8,7 @@ import json
 
 from src.mosru_api import parser
 from src.core.database import Route
+from src.mosru_api.parser import parse_route
 
 schedule_router = APIRouter(
     prefix="/schedule",
@@ -19,20 +21,18 @@ schedule_router = APIRouter(
     name="get_route_info",
     status_code=status.HTTP_200_OK
 )
-def get_route_info():
+def get_route_info(short_name: str):
     """
     Возвращает ключевую информацию по искомому маршруту в json
     """
-    short_name = "м16"
-    stmt = select(Route).where(Route.short_route_name == short_name)
-    result = session.execute(stmt)
-    route_info = result.fetchone()
+    query = select(Route).where(Route.short_route_name == short_name)
+    result = session.execute(query)
+    route_info = result.scalars().first()
 
     if route_info is not None:
-        return json.dumps(dict(route_info), ensure_ascii=False)
+        return route_info
     else:
-        return json.dumps({"error": "Route not found"}, ensure_ascii=False)
-    # че то не понял
+        return {"error": "Route not found"}
 
 
 @schedule_router.get(
@@ -40,11 +40,14 @@ def get_route_info():
     name="get_route_info",
     status_code=status.HTTP_200_OK
 )
-def get_stops_info(direction: int):
+def get_stops_info(direction: int = 0, url :str):
     """
     Возвращает все остановки маршрута и время остановок
     """
-    pass
+
+    data = parse_route(direction, url=url)
+    return data
+
 
 
 @schedule_router.post(
@@ -62,7 +65,6 @@ def update_routes_data():
             route = Route(item['short_route_name'], item['long_route_name'], item['link'])
             session.add(route)
     session.commit()
-
 
 # @schedule_router.post(
 #     "update_stops_info",
