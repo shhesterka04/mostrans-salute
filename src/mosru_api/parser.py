@@ -6,6 +6,10 @@ from selenium.webdriver.chrome.options import Options
 import time
 import json
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 def parse_schedule():
     url = 'https://transport.mos.ru/transport/schedule'
@@ -46,14 +50,39 @@ def parse_schedule():
     return data
 
 
-def parse_route(url, direction=0):
+def parse_route(url, direction):
     url = "https://transport.mos.ru" + url
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
-                      'Chrome/39.0.2171.95 Safari/537.36'
-    }
-    response = requests.get(url, headers=headers)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    if direction == 0:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/39.0.2171.95 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers)
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+    elif direction == 1:
+        options = Options()
+        options.add_argument("--headless")
+
+        service = Service(executable_path="src/mosru_api/chromedriver")
+        driver = webdriver.Chrome(service=service)
+        driver.get(url)
+        try:
+            change_button = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'ic.ic-change-a-b'))
+            )
+            change_button.click()
+            time.sleep(2)
+        except:
+            time.sleep(1)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/39.0.2171.95 Safari/537.36'
+        }
+
+        html = driver.page_source
+        driver.quit()
+        soup = BeautifulSoup(html, 'html.parser')
 
     data = []
 
@@ -82,5 +111,4 @@ def parse_route(url, direction=0):
         })
 
     return json.dumps(data, ensure_ascii=False, indent=4)
-
 
