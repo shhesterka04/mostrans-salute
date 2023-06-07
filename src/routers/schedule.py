@@ -23,11 +23,15 @@ def get_route_info(short_name: str):
     Возвращает ключевую информацию по искомому маршруту в json
     """
     route_info = routes.find_one({"short_route_name": short_name})
-
+    print(f"{short_name} найдено")
     if route_info is not None:
+        print(f"1")
         route_info['stops_data'] = parse_route(route_info['link'])
+        print(f"2")
         routes.update_one({'_id': route_info['_id']}, {'$set': route_info})
+        print(f"3")
         return json.loads(json_util.dumps(route_info))
+        print(f"4")
     else:
         return {"error": "Route not found"}
 
