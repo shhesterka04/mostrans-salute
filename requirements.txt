@@ -8,3 +8,5 @@ tqdm~=4.65.0
 uvicorn~=0.22.0
 selenium~=4.9.1
 SQLAlchemy~=2.0.15
+pymongo~=4.3.3
+
