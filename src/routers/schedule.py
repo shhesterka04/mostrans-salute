@@ -1,5 +1,3 @@
-import time
-
 from fastapi import APIRouter
 from starlette import status
 from bson import json_util
