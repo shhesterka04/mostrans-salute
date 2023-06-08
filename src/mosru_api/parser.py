@@ -18,7 +18,7 @@ def parse_schedule():
     options.add_argument("--headless")
 
     service = Service(executable_path="src/mosru_api/chromedriver")
-    driver = webdriver.Chrome(service=service)
+    driver = webdriver.Chrome(service=service, options=options)
     try:
         driver.get(url)
 
@@ -65,7 +65,7 @@ def parse_route(url, direction):
         options.add_argument("--headless")
 
         service = Service(executable_path="src/mosru_api/chromedriver")
-        driver = webdriver.Chrome(service=service)
+        driver = webdriver.Chrome(service=service, options=options)
         driver.get(url)
         try:
             change_button = WebDriverWait(driver, 10).until(

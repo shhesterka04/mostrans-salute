@@ -45,3 +45,6 @@ def update_routes_data():
             item["stops_data_0"] = parse_route(item['link'], direction=0)
             item["stops_data_1"] = parse_route(item['link'], direction=1)
             routes.insert_one(item)
+            print(f"{item['short_route_name']} добавлен")
+        else:
+            print(f"{item['short_route_name']} уже есть")

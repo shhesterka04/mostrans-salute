@@ -8,7 +8,8 @@ def get_application() -> FastAPI:
     application = FastAPI()
 
     origins = [
-        "http://localhost:3001"
+        "http://localhost:3001",
+        "http://localhost:3000"
     ]
 
     application.add_middleware(
