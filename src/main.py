@@ -9,7 +9,8 @@ def get_application() -> FastAPI:
 
     origins = [
         "http://localhost:3001",
-        "http://localhost:3000"
+        "http://localhost:3000",
+        "https://crs-front.vercel.app"
     ]
 
     application.add_middleware(
