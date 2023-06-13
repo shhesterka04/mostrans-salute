@@ -12,7 +12,6 @@ schedule_router = APIRouter(
     tags=["Schedule"]
 )
 
-
 @schedule_router.get(
     "/route_info",
     name="get_route_info",
