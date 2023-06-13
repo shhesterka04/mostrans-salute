@@ -27,7 +27,7 @@ def get_route_info(short_name: str):
     #     return json.loads(json_util.dumps(route_info))
     # else:
     #     return {"error": "Route not found"}
-    route_info = routes.find_one({"short_route_name": short_name})
+    route_info = routes.find_one({"short_route_name": short_name, "transport_type": "bus"})
     if route_info is not None:
         stops_data = json.loads(route_info['stops_data_0'])
         for stop in stops_data:
@@ -76,3 +76,7 @@ def update_routes_data():
             print(f"{item['short_route_name']} добавлен")
         else:
             print(f"{item['short_route_name']} уже есть")
+
+
+
+

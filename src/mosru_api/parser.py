@@ -39,11 +39,16 @@ def parse_schedule():
             long_route_name_tag = route.find('div', class_='ts-title')
             link = route.get('href')
             if short_route_name_tag and long_route_name_tag and link:
+                if route.find('i', class_='ic ic-bus'):
+                    trans_type = "bus"
+                elif route.find('i', class_='ic icon-tramway'):
+                    trans_type = "tram"
                 data.append({
                     'short_route_name': short_route_name_tag.text.strip(),
                     'long_route_name': long_route_name_tag.text.strip().replace("\"", ""),
                     'link': link,
-                })
+                    'transport_type': trans_type})
+
     finally:
         driver.quit()
 

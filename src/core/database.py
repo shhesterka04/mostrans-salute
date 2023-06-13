@@ -18,4 +18,4 @@ class Route:
 password = "WEkW2B7IjCphpBs0"
 client = MongoClient(f"mongodb+srv://mostrans:{password}@cluster0.a62xwlu.mongodb.net/?retryWrites=true&w=majority")
 db = client['mostrans']
-routes = db['routes']
+routes = db['routes_data']
