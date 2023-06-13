@@ -43,6 +43,20 @@ def get_route_info(short_name: str):
     else:
         return {"error": "Route not found"}
 
+@schedule_router.get(
+    "/route_info_time",
+    name="get_route_info_time",
+    status_code=status.HTTP_200_OK
+)
+def get_route_info_with_time(short_name: str):
+    """
+    Возвращает ключевую информацию по искомому маршруту в json
+    """
+    route_info = routes.find_one({"short_route_name": short_name})
+    if route_info is not None:
+        return json.loads(json_util.dumps(route_info))
+    else:
+        return {"error": "Route not found"}
 
 @schedule_router.post(
     "/update_data",
