@@ -54,9 +54,14 @@ def get_route_info_with_time(short_name: str):
     """
     route_info = routes.find_one({"short_route_name": short_name})
     if route_info is not None:
-        return json.loads(json_util.dumps(route_info))
+        route_info = json.loads(json_util.dumps(route_info))
+        route_info_str = json.dumps(route_info, ensure_ascii=False, separators=(',', ':'))
+        return route_info_str.replace('\n', '').replace('\\n', '').replace('\\', '').replace(' ', '').replace('\"', '"')
+
     else:
         return {"error": "Route not found"}
+
+
 
 @schedule_router.post(
     "/update_data",
