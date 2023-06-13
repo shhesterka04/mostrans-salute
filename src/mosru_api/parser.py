@@ -115,5 +115,4 @@ def parse_route(url, direction):
             'arrive_time': arrive_time,
         })
 
-
     return json.dumps(data, ensure_ascii=False, indent=4)
